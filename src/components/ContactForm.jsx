@@ -4,7 +4,7 @@ import { supabase } from '../supabaseClient'
 export default function ContactForm({ companyId, initial, onSaved, onCancel }) {
   const [form, setForm] = useState({
     name: initial?.name || '',
-    role: initial?.role || '',
+    filial: initial?.filial || '',
     phone: initial?.phone || '',
     email: initial?.email || '',
     notes: initial?.notes || '',
@@ -36,8 +36,8 @@ export default function ContactForm({ companyId, initial, onSaved, onCancel }) {
           <input value={form.name} onChange={set('name')} required autoFocus />
         </label>
         <label>
-          Cargo
-          <input value={form.role} onChange={set('role')} />
+          Filial
+          <input value={form.filial} onChange={set('filial')} />
         </label>
         <label>
           Telefone
