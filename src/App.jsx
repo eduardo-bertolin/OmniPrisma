@@ -44,7 +44,7 @@ function Workspace({ user }) {
           [c.name, c.document, c.phone, c.email, c.anydesk, c.vpn, c.notes].join(' ')
         )
         const matchedContact = c.contacts.find((ct) =>
-          norm([ct.name, ct.role, ct.phone, ct.email, ct.notes].join(' ')).includes(q)
+          norm([ct.name, <ct className="filial"></ct>, ct.phone, ct.email, ct.notes].join(' ')).includes(q)
         )
         if (companyText.includes(q) || matchedContact) return { company: c, matchedContact }
         return null

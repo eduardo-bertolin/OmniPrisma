@@ -169,7 +169,7 @@ export default function CompanyDetail({ company, onChanged, onDeleted }) {
             <div className="contact" key={ct.id}>
               <div>
                 <strong>{ct.name}</strong>
-                {ct.role && <span className="muted"> · {ct.role}</span>}
+                {ct.filial && <span className="muted"> · {ct.filial}</span>}
                 <div className="small">
                   {[ct.phone, ct.email].filter(Boolean).join('  |  ') || (
                     <span className="muted">Sem telefone ou e-mail</span>
