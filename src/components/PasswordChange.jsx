@@ -64,6 +64,7 @@ export default function PasswordChange({ user, onComplete, isSettings = false })
           onChange={(e) => setPassword(e.target.value)}
           required
           autoFocus
+          autoComplete="new-password"
         />
       </label>
       <label>
@@ -73,6 +74,7 @@ export default function PasswordChange({ user, onComplete, isSettings = false })
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
           required
+          autoComplete="new-password"
         />
       </label>
       {error && <div className="alert">{error}</div>}
