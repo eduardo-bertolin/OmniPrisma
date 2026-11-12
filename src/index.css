@@ -87,6 +87,11 @@ p {
 .content {
   padding: 24px;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.content::-webkit-scrollbar {
+  display: none;
 }
 
 .content-empty {
