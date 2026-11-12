@@ -20,7 +20,7 @@ export default function Login() {
     <div className="login-wrap">
       <form className="card login" onSubmit={handleSubmit}>
         <div className="brand">
-          <img src="/logo.svg" alt="OmniPrisma" style={{ width: '36px', height: '36px' }} />
+          <img src="/logo.svg" alt="OmniPrisma" style={{ width: '32px', height: '32px' }} />
           OmniPrisma
         </div>
         <label>
