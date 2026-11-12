@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
-import { decryptText, deriveKey, encryptText, newSalt } from '../crypto'
+import { decryptText, deriveKey, encryptText, newSalt, fromB64, toB64 } from '../crypto'
 import { toast } from 'react-toastify'
 
 const VaultContext = createContext(null)
@@ -15,11 +15,10 @@ export default function VaultProvider({ user, password, children }) {
 
   async function initializeVault() {
     try {
-      // 1. Gera uma chave mestra aleatória forte
-      const masterKeyString = newSalt()
+      // 1. Gera uma chave mestra aleatória forte (256 bits = 32 bytes)
+      const masterKeyString = newKey()
       
       // 2. Deriva a chave de proteção da senha do usuário
-      // Convertemos o user.id para Base64 para ser um 'salt' válido para o deriveKey
       const saltB64 = btoa(user.id)
       const protectionKey = await deriveKey(submittedPassword, saltB64)
       
@@ -39,6 +38,7 @@ export default function VaultProvider({ user, password, children }) {
       toast.success('Cofre inicializado com sucesso!')
       window.location.reload()
     } catch (err) {
+      console.error('Erro ao inicializar cofre:', err)
       toast.error('Falha ao inicializar cofre: ' + err.message)
     }
   }
@@ -62,10 +62,11 @@ export default function VaultProvider({ user, password, children }) {
 
         const saltB64 = btoa(user.id)
         const decryptionKey = await deriveKey(submittedPassword, saltB64)
-        const masterKey = await decryptText(decryptionKey, data.encrypted_master_key)
+        const masterKeyBase64 = await decryptText(decryptionKey, data.encrypted_master_key)
 
         if (alive) {
-          const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(masterKey), 'AES-GCM', false, ['encrypt', 'decrypt'])
+          const masterKeyBytes = fromB64(masterKeyBase64)
+          const key = await crypto.subtle.importKey('raw', masterKeyBytes, 'AES-GCM', false, ['encrypt', 'decrypt'])
 
           setApi({
             encrypt: (text) => encryptText(key, text),
@@ -75,6 +76,7 @@ export default function VaultProvider({ user, password, children }) {
         }
       } catch (err) {
         if (alive) {
+          console.error('Erro ao abrir cofre:', err)
           toast.error('Falha ao abrir cofre: senha incorreta.')
           setError('Falha ao abrir cofre: senha incorreta ou chave corrompida.')
         }
