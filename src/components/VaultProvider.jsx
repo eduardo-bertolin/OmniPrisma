@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
-import { decryptText, deriveKey, encryptText, newSalt, fromB64, toB64 } from '../crypto'
+import { decryptText, deriveKey, encryptText, newKey, newSalt, fromB64, toB64 } from '../crypto'
 import { toast } from 'react-toastify'
 
 const VaultContext = createContext(null)
