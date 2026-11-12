@@ -89,6 +89,27 @@ p {
   overflow-y: auto;
 }
 
+.content-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+/* Company Detail Grid */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -163,7 +184,7 @@ p {
 .user-box {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
   padding-top: 24px;
   border-top: 1px solid var(--line);
 }
@@ -171,7 +192,7 @@ p {
 .user-box-top {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
 }
 
 /* Forms */
@@ -208,21 +229,11 @@ textarea:focus {
 }
 
 /* Cards */
-.stack {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 28px;
-  max-width: 900px;
-  margin: 0 auto;
 }
 
 .card-head {
@@ -320,6 +331,7 @@ textarea:focus {
   color: var(--accent);
   padding: 6px;
   border-radius: 6px;
+  text-align: left;
 }
 
 .btn.link:hover {
