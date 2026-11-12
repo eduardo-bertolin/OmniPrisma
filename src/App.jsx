@@ -136,12 +136,13 @@ function Workspace({ user }) {
         </div>
 
         <div className="user-box">
+          <span className="small muted" style={{ textAlign: 'center', marginBottom: '4px' }}>{user.email}</span>
           {isAdmin && (
-            <button className="btn link" onClick={() => setView('trash')}>
+            <button className="btn link" onClick={() => setView('trash')} style={{ textAlign: 'center' }}>
               Lixeira
             </button>
           )}
-          <button className="btn link" onClick={() => supabase.auth.signOut()}>
+          <button className="btn link" onClick={() => supabase.auth.signOut()} style={{ textAlign: 'center' }}>
             Sair
           </button>
         </div>
