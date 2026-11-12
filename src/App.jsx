@@ -86,7 +86,7 @@ function Workspace({ user }) {
     <div className="layout">
       <aside className="sidebar">
         <div className="brand" onClick={() => setView('main')} style={{ cursor: 'pointer' }}>
-          <img src="/logo.jpg" alt="OmniPrisma" style={{ width: '28px', height: '28px' }} />
+          <img src="/logo.png" alt="OmniPrisma" style={{ width: '28px', height: '28px' }} />
           OmniPrisma
         </div>
 
