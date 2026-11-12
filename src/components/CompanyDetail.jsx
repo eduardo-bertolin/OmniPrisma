@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient'
 import CompanyForm from './CompanyForm'
 import ContactForm from './ContactForm'
 import { useVault } from './VaultProvider'
+import { toast } from 'react-toastify'
 
 function Info({ label, value }) {
   const [fading, setFading] = useState(false)
@@ -11,6 +12,7 @@ function Info({ label, value }) {
     if (!value) return
     await navigator.clipboard.writeText(value)
     setFading(true)
+    toast.success('Copiado para a área de transferência!')
     setTimeout(() => setFading(false), 600)
   }
 
@@ -80,6 +82,7 @@ function SecretField({ label, encrypted }) {
       const text = plain ?? (await vault.decrypt(encrypted))
       await navigator.clipboard.writeText(text)
       setFading(true)
+      toast.success('Senha copiada para a área de transferência!')
       setTimeout(() => setFading(false), 600)
     } catch {
       setError('Falha ao copiar')

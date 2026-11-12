@@ -6,6 +6,8 @@ import CompanyDetail from './components/CompanyDetail'
 import TrashView from './components/TrashView'
 import PasswordChange from './components/PasswordChange'
 import VaultProvider from './components/VaultProvider'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const norm = (s) =>
   (s || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -188,6 +190,19 @@ function Workspace({ user }) {
           </>
         )}
       </main>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        style={{ fontSize: '0.875rem' }}
+      />
     </div>
   )
 }
