@@ -34,6 +34,7 @@ export default function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            style={{ marginBottom: '16px' }}
           />
         </label>
         {error && <div className="alert">{error}</div>}
