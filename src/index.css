@@ -70,7 +70,7 @@ p {
 /* Layout */
 .layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: minmax(200px, 280px) 1fr;
   height: 100%;
 }
 
@@ -82,6 +82,7 @@ p {
   background: var(--surface);
   border-right: 1px solid var(--line);
   min-height: 0;
+  overflow-y: auto;
 }
 
 .content {
@@ -438,7 +439,7 @@ textarea:focus {
 }
 
 /* Media */
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
     height: auto;
@@ -447,10 +448,11 @@ textarea:focus {
   .sidebar {
     border-right: 0;
     border-bottom: 1px solid var(--line);
+    max-height: 400px;
   }
 
   .list {
-    max-height: 260px;
+    max-height: 200px;
   }
 
   .card {
