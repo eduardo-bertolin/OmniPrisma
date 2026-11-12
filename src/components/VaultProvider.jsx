@@ -96,7 +96,7 @@ export default function VaultProvider({ user, children }) {
     )
   }
 
-  if (!api) return null
+  if (!api) return <div className="login-wrap" style={{ color: 'var(--text)' }}>Carregando cofre...</div>
 
   return <VaultContext.Provider value={api}>{children}</VaultContext.Provider>
 }

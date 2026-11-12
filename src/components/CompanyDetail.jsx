@@ -4,6 +4,15 @@ import CompanyForm from './CompanyForm'
 import ContactForm from './ContactForm'
 import { useVault } from './VaultProvider'
 
+function Info({ label, value }) {
+  return (
+    <div className="info">
+      <dt>{label}</dt>
+      <dd>{value || <span className="muted">—</span>}</dd>
+    </div>
+  )
+}
+
 function Check({ label, checked }) {
   return (
     <div className="info">
@@ -163,8 +172,8 @@ export default function CompanyDetail({ company, user, onChanged, onDeleted }) {
           <Info label="VPN" value={company.vpn} />
           <SecretField label="Senha da VPN" encrypted={company.vpn_password} />
           <Info label="E-mail" value={company.email} />
-          <Check label="Possui RH" checked={company.has_rh} />
-          <Check label="Possui SP" checked={company.has_sp} />
+          <Check label="Possui RH" checked={company.has_rh || false} />
+          <Check label="Possui SP" checked={company.has_sp || false} />
         </dl>
 
         {company.notes && (
