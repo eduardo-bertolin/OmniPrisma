@@ -13,17 +13,34 @@ export default function VaultProvider({ user, password, children }) {
   const [submittedPassword, setSubmittedPassword] = useState(password)
 
   async function initializeVault() {
+    console.log("DEBUG: Iniciando initializeVault...");
+    alert("Iniciando inicialização do cofre...");
     try {
+      console.log("DEBUG: password atual:", submittedPassword);
+      // 1. Gera uma chave mestra aleatória forte
       const masterKeyString = newSalt()
+      
+      // 2. Deriva a chave de proteção da senha do usuário
       const protectionKey = await deriveKey(submittedPassword, user.id)
+      
+      // 3. Criptografa a chave mestra com a chave de proteção
       const encryptedMasterKey = await encryptText(protectionKey, masterKeyString)
+      
+      // 4. Salva no banco
       const { error } = await supabase.from('user_vault_keys').insert({
         user_id: user.id,
         encrypted_master_key: encryptedMasterKey
       })
-      if (error) throw error
+      
+      if (error) {
+        console.error("DEBUG: Erro Supabase:", error);
+        throw error
+      }
+      
+      // 5. Recarrega o cofre
       window.location.reload()
     } catch (err) {
+      console.error("DEBUG: Erro capturado:", err);
       setError('Falha ao inicializar cofre: ' + err.message)
     }
   }
@@ -49,6 +66,7 @@ export default function VaultProvider({ user, password, children }) {
         const masterKey = await decryptText(decryptionKey, data.encrypted_master_key)
 
         if (alive) {
+          // Importa a chave mestra como chave AES
           const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(masterKey), 'AES-GCM', false, ['encrypt', 'decrypt'])
 
           setApi({
