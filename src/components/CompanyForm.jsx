@@ -86,6 +86,7 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
             value={form.access_method}
             onChange={set('access_method')}
             placeholder="AnyDesk, Remote Desktop, Cloud…"
+            autoComplete="off"
           />
           <datalist id="access-methods">
             {ACCESS_OPTIONS.map((option) => (
