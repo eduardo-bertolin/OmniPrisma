@@ -14,8 +14,8 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
     anydesk_password: '',
     vpn: initial?.vpn || '',
     vpn_password: '',
-    has_rh: initial?.has_rh || false,
-    has_sp: initial?.has_sp || false,
+    has_rh: Boolean(initial?.has_rh),
+    has_sp: Boolean(initial?.has_sp),
     notes: initial?.notes || '',
   })
   const [ready, setReady] = useState(false)
@@ -137,11 +137,13 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
         </label>
         <label style={{ flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
           <input type="checkbox" checked={form.has_rh} onChange={setCheckbox('has_rh')} style={{ width: 'auto' }} />
-          Possui controle ponto e refeitório (RH)
+          <img src="/rh-cp.ico" alt="RH" style={{ width: '20px', height: '20px', marginRight: '8px' }} />
+          Possui controle ponto e refeitório
         </label>
         <label style={{ flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
           <input type="checkbox" checked={form.has_sp} onChange={setCheckbox('has_sp')} style={{ width: 'auto' }} />
-          Possui sistema de ponto (SP)
+          <img src="/sp.ico" alt="SP" style={{ width: '20px', height: '20px', marginRight: '8px' }} />
+          Possui sistema de ponto
         </label>
       </div>
 
