@@ -64,7 +64,7 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
   }
 
   return (
-    <form className="card" onSubmit={handleSubmit} style={{ maxWidth: '860px', margin: '0 auto' }}>
+    <form className="card" onSubmit={handleSubmit}>
       <div className="card-head">
         <h2>{initial ? 'Editar empresa' : 'Nova empresa'}</h2>
         <div className="actions">
@@ -74,10 +74,10 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
         </div>
       </div>
 
-      <div className="grid">
+      <div className="form-grid">
         <label className="span2">
           Nome da empresa
-          <input value={form.name} onChange={set('name')} required autoFocus style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }} />
+          <input value={form.name} onChange={set('name')} required autoFocus />
         </label>
         <label className="span2">
           Acesso via
@@ -86,7 +86,6 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
             value={form.access_method}
             onChange={set('access_method')}
             placeholder="AnyDesk, Remote Desktop, Cloud…"
-            style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }}
           />
           <datalist id="access-methods">
             {ACCESS_OPTIONS.map((option) => (
@@ -96,11 +95,11 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
         </label>
         <label className="span2">
           E-mail
-          <input type="email" value={form.email} onChange={set('email')} style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }} />
+          <input type="email" value={form.email} onChange={set('email')} />
         </label>
         <label>
           Número do AnyDesk
-          <input value={form.anydesk} onChange={set('anydesk')} style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }} />
+          <input value={form.anydesk} onChange={set('anydesk')} />
         </label>
         <label>
           Senha do AnyDesk (criptografada)
@@ -109,12 +108,11 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
             autoComplete="new-password"
             value={form.anydesk_password}
             onChange={set('anydesk_password')}
-            style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }}
           />
         </label>
         <label>
           VPN utilizada
-          <input value={form.vpn} onChange={set('vpn')} style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }} />
+          <input value={form.vpn} onChange={set('vpn')} />
         </label>
         <label>
           Senha da VPN (criptografada)
@@ -123,23 +121,21 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
             autoComplete="new-password"
             value={form.vpn_password}
             onChange={set('vpn_password')}
-            style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }}
           />
         </label>
         <label className="span2">
           Observações
           <textarea
-            rows="4"
+            rows="3"
             value={form.notes}
             onChange={set('notes')}
-            style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '10px 14px' }}
           />
         </label>
       </div>
 
-      {error && <div className="alert" style={{ marginTop: '16px' }}>{error}</div>}
+      {error && <div className="alert">{error}</div>}
 
-      <div className="actions" style={{ marginTop: '24px' }}>
+      <div className="actions">
         <button className="btn primary" disabled={busy || !ready}>
           {busy ? 'Salvando…' : 'Salvar empresa'}
         </button>

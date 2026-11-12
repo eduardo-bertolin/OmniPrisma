@@ -195,6 +195,16 @@ label {
   color: var(--text-dim);
 }
 
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.span2 {
+  grid-column: span 2;
+}
+
 input,
 textarea {
   font: inherit;
