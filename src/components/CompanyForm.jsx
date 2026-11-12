@@ -64,13 +64,20 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
   }
 
   return (
-    <form className="card" onSubmit={handleSubmit}>
-      <h2>{initial ? 'Editar empresa' : 'Nova empresa'}</h2>
+    <form className="card" onSubmit={handleSubmit} style={{ maxWidth: '860px', margin: '0 auto' }}>
+      <div className="card-head">
+        <h2>{initial ? 'Editar empresa' : 'Nova empresa'}</h2>
+        <div className="actions">
+          <button type="button" className="btn" onClick={onCancel}>
+            Cancelar
+          </button>
+        </div>
+      </div>
 
       <div className="grid">
         <label className="span2">
           Nome da empresa
-          <input value={form.name} onChange={set('name')} required autoFocus />
+          <input value={form.name} onChange={set('name')} required autoFocus style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }} />
         </label>
         <label className="span2">
           Acesso via
@@ -79,6 +86,7 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
             value={form.access_method}
             onChange={set('access_method')}
             placeholder="AnyDesk, Remote Desktop, Cloud…"
+            style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }}
           />
           <datalist id="access-methods">
             {ACCESS_OPTIONS.map((option) => (
@@ -88,11 +96,11 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
         </label>
         <label className="span2">
           E-mail
-          <input type="email" value={form.email} onChange={set('email')} />
+          <input type="email" value={form.email} onChange={set('email')} style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }} />
         </label>
         <label>
           Número do AnyDesk
-          <input value={form.anydesk} onChange={set('anydesk')} />
+          <input value={form.anydesk} onChange={set('anydesk')} style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }} />
         </label>
         <label>
           Senha do AnyDesk (criptografada)
@@ -101,11 +109,12 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
             autoComplete="new-password"
             value={form.anydesk_password}
             onChange={set('anydesk_password')}
+            style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }}
           />
         </label>
         <label>
           VPN utilizada
-          <input value={form.vpn} onChange={set('vpn')} />
+          <input value={form.vpn} onChange={set('vpn')} style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }} />
         </label>
         <label>
           Senha da VPN (criptografada)
@@ -114,20 +123,23 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
             autoComplete="new-password"
             value={form.vpn_password}
             onChange={set('vpn_password')}
+            style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }}
           />
         </label>
         <label className="span2">
           Observações
-          <textarea rows="4" value={form.notes} onChange={set('notes')} />
+          <textarea
+            rows="4"
+            value={form.notes}
+            onChange={set('notes')}
+            style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '10px 14px' }}
+          />
         </label>
       </div>
 
-      {error && <div className="alert">{error}</div>}
+      {error && <div className="alert" style={{ marginTop: '16px' }}>{error}</div>}
 
-      <div className="actions">
-        <button type="button" className="btn" onClick={onCancel}>
-          Cancelar
-        </button>
+      <div className="actions" style={{ marginTop: '24px' }}>
         <button className="btn primary" disabled={busy || !ready}>
           {busy ? 'Salvando…' : 'Salvar empresa'}
         </button>

@@ -70,6 +70,11 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent-main); }
   background: var(--bg-surface); border: 1px solid var(--border-subtle);
   border-radius: 16px; padding: 24px; max-width: 860px;
 }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+.subform {
+  background: var(--bg-primary); border: 1px solid var(--border-subtle);
+  border-radius: 12px; padding: 20px; margin-bottom: 20px;
+}
 
 /* buttons */
 .btn {
