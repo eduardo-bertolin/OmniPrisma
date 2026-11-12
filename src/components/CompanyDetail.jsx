@@ -5,10 +5,19 @@ import ContactForm from './ContactForm'
 import { useVault } from './VaultProvider'
 
 function Info({ label, value }) {
+  const [fading, setFading] = useState(false)
+
+  async function copy() {
+    if (!value) return
+    await navigator.clipboard.writeText(value)
+    setFading(true)
+    setTimeout(() => setFading(false), 600)
+  }
+
   return (
-    <div className="info">
+    <div className="info" onClick={copy} style={{ cursor: 'pointer' }} title="Clique para copiar">
       <dt>{label}</dt>
-      <dd>{value || <span className="muted">—</span>}</dd>
+      <dd className={fading ? 'fade-copy' : ''}>{value || <span className="muted">—</span>}</dd>
     </div>
   )
 }
@@ -49,6 +58,7 @@ function SecretField({ label, encrypted }) {
   const vault = useVault()
   const [plain, setPlain] = useState(null)
   const [error, setError] = useState('')
+  const [fading, setFading] = useState(false)
 
   async function reveal() {
     try {
@@ -62,6 +72,8 @@ function SecretField({ label, encrypted }) {
     try {
       const text = plain ?? (await vault.decrypt(encrypted))
       await navigator.clipboard.writeText(text)
+      setFading(true)
+      setTimeout(() => setFading(false), 600)
     } catch {
       setError('Falha ao copiar')
     }
@@ -74,17 +86,14 @@ function SecretField({ label, encrypted }) {
         {!encrypted ? (
           <span className="muted">—</span>
         ) : (
-          <span className="secret">
-            <span className="mono">{plain ?? '••••••••'}</span>
+          <span className="secret" onClick={copy} style={{ cursor: 'pointer' }} title="Clique para copiar">
+            <span className={`mono ${fading ? 'fade-copy' : ''}`}>{plain ?? '••••••••'}</span>
             <button
               type="button"
               className="btn link"
-              onClick={plain === null ? reveal : () => setPlain(null)}
+              onClick={(e) => { e.stopPropagation(); plain === null ? reveal() : setPlain(null) }}
             >
               {plain === null ? 'Mostrar' : 'Ocultar'}
-            </button>
-            <button type="button" className="btn link" onClick={copy}>
-              Copiar
             </button>
           </span>
         )}

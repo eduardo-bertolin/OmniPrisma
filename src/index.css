@@ -392,12 +392,15 @@ textarea:focus {
   cursor: default;
 }
 
-/* Actions */
-.actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 20px;
+/* Animação para copiar */
+@keyframes copyFade {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+.fade-copy {
+  animation: copyFade 0.6s ease;
 }
 
 /* Alerts */
