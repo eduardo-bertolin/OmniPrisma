@@ -4,11 +4,39 @@ import CompanyForm from './CompanyForm'
 import ContactForm from './ContactForm'
 import { useVault } from './VaultProvider'
 
-function Info({ label, value }) {
+function Check({ label, checked }) {
   return (
     <div className="info">
       <dt>{label}</dt>
-      <dd>{value || <span className="muted">—</span>}</dd>
+      <dd>{checked ? '✅' : '❌'}</dd>
+    </div>
+  )
+}
+
+function BoolIcon({ value, label }) {
+  return (
+    <div className="info">
+      <dt>{label}</dt>
+      <dd>
+        <span className="bool-icon" style={{ 
+          display: 'inline-flex', 
+          alignItems: 'center', 
+          gap: '8px',
+          color: value ? 'var(--success, #22c55e)' : 'var(--danger, #ef4444)'
+        }}>
+          {value ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          )}
+          <span style={{ fontWeight: 500 }}>{value ? 'Sim' : 'Não'}</span>
+        </span>
+      </dd>
     </div>
   )
 }
@@ -135,6 +163,8 @@ export default function CompanyDetail({ company, user, onChanged, onDeleted }) {
           <Info label="VPN" value={company.vpn} />
           <SecretField label="Senha da VPN" encrypted={company.vpn_password} />
           <Info label="E-mail" value={company.email} />
+          <Check label="Possui RH" checked={company.has_rh} />
+          <Check label="Possui SP" checked={company.has_sp} />
         </dl>
 
         {company.notes && (
