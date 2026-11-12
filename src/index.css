@@ -77,8 +77,8 @@ p {
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 32px;
+  gap: 16px;
+  padding: 24px;
   background: var(--surface);
   border-right: 1px solid var(--line);
   min-height: 0;
@@ -130,6 +130,11 @@ p {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.list::-webkit-scrollbar {
+  display: none;
 }
 
 .list-item {
