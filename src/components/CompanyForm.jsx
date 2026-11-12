@@ -161,7 +161,7 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
         </div>
       )}
 
-      <div className="actions">
+      <div className="actions" style={{ marginTop: '24px' }}>
         <button className="btn primary" disabled={busy}>
           {busy ? 'Salvando…' : 'Salvar empresa'}
         </button>
