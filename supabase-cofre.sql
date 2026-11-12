@@ -1,26 +1,38 @@
 -- Rode no Supabase: SQL Editor > New query > Run
 -- Adiciona campos de senha (guardados criptografados) e a tabela do cofre.
+--
+-- O cofre é aberto pelo próprio login do sistema: cada usuário tem um "salt"
+-- próprio e a chave de criptografia é derivada do id dele. Não existe mais
+-- senha mestra nem tela de desbloqueio.
 
 alter table companies add column if not exists anydesk_password text;
 alter table companies add column if not exists vpn_password text;
 
--- Guarda apenas o "sal" e um texto de verificação criptografado.
--- A senha mestra NUNCA vai para o banco.
-create table if not exists vault_config (
-  id int primary key default 1 check (id = 1),
+-- Um registro por usuário logado.
+create table if not exists user_vault_keys (
+  user_id uuid primary key references auth.users(id) on delete cascade,
   salt text not null,
-  check_value text not null,
   created_at timestamptz not null default now()
 );
 
-alter table vault_config enable row level security;
+alter table user_vault_keys enable row level security;
 
-drop policy if exists "logados leem cofre" on vault_config;
-drop policy if exists "logados criam cofre" on vault_config;
+drop policy if exists "usuarios leem o proprio cofre" on user_vault_keys;
+drop policy if exists "usuarios criam o proprio cofre" on user_vault_keys;
+drop policy if exists "usuarios atualizam o proprio cofre" on user_vault_keys;
 
-create policy "logados leem cofre"
-  on vault_config for select to authenticated using (true);
+create policy "usuarios leem o proprio cofre"
+  on user_vault_keys for select to authenticated
+  using (auth.uid() = user_id);
 
--- Sem policy de update/delete: depois de criada, a configuração não pode ser alterada pelo app.
-create policy "logados criam cofre"
-  on vault_config for insert to authenticated with check (true);
+create policy "usuarios criam o proprio cofre"
+  on user_vault_keys for insert to authenticated
+  with check (auth.uid() = user_id);
+
+create policy "usuarios atualizam o proprio cofre"
+  on user_vault_keys for update to authenticated
+  using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Instalação antiga: a tabela da senha mestra não é mais usada.
+-- Rode o comando abaixo só se quiser apagar a tabela antiga:
+-- drop table if exists vault_config;

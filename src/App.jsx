@@ -3,30 +3,42 @@ import { supabase } from './supabaseClient'
 import Login from './components/Login'
 import CompanyForm from './components/CompanyForm'
 import CompanyDetail from './components/CompanyDetail'
-import VaultGate, { useVault } from './components/VaultGate'
+import TrashView from './components/TrashView'
+import PasswordChange from './components/PasswordChange'
+import VaultProvider from './components/VaultProvider'
 
 const norm = (s) =>
   (s || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 
 function Workspace({ user }) {
-  const vault = useVault()
   const [companies, setCompanies] = useState([])
   const [loading, setLoading] = useState(true)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [mustChange, setMustChange] = useState(false)
+  const [view, setView] = useState('main')
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
   const [selectedId, setSelectedId] = useState(null)
   const [creating, setCreating] = useState(false)
 
   async function load() {
-    const { data, error } = await supabase
-      .from('companies')
-      .select('*, contacts(*)')
-      .order('name')
+    setLoading(true)
+    const [{ data, error }, { data: profile }] = await Promise.all([
+      supabase
+        .from('companies')
+        .select('*, contacts(*)')
+        .is('deleted_at', null)
+        .order('name'),
+      supabase.from('profiles').select('role, must_change_password').eq('id', user.id).maybeSingle(),
+    ])
+    
     if (error) setError(error.message)
     else {
       setError('')
-      setCompanies(data)
+      setCompanies(data || [])
     }
+    if (profile?.role === 'admin') setIsAdmin(true)
+    if (profile?.must_change_password) setMustChange(true)
     setLoading(false)
   }
 
@@ -41,10 +53,10 @@ function Workspace({ user }) {
     return companies
       .map((c) => {
         const companyText = norm(
-          [c.name, c.document, c.phone, c.email, c.anydesk, c.vpn, c.notes].join(' ')
+          [c.name, c.access_method, c.anydesk, c.vpn, c.email, c.notes].join(' ')
         )
         const matchedContact = c.contacts.find((ct) =>
-          norm([ct.name, <ct className="filial"></ct>, ct.phone, ct.email, ct.notes].join(' ')).includes(q)
+          norm([ct.name, ct.filial, ct.sector, ct.phone, ct.email, ct.notes].join(' ')).includes(q)
         )
         if (companyText.includes(q) || matchedContact) return { company: c, matchedContact }
         return null
@@ -65,18 +77,23 @@ function Workspace({ user }) {
     await load()
   }
 
+  // Renderização condicional SEM pular hooks - usa JSX condicional
+  if (mustChange) {
+    return <PasswordChange user={user} onComplete={() => setMustChange(false)} />
+  }
+
   return (
     <div className="layout">
       <aside className="sidebar">
-        <div className="brand">
-          <span className="brand-mark" aria-hidden="true" />
-          Omni Prisma
+        <div className="brand" onClick={() => setView('main')} style={{ cursor: 'pointer' }}>
+          <img src="/logo.svg" alt="OmniPrisma" style={{ width: '32px', height: '32px' }} />
+          OmniPrisma
         </div>
 
         <input
           className="search"
           type="search"
-          placeholder="Buscar empresa, contato, AnyDesk, VPN…"
+          placeholder="Buscar empresa, contato, acesso via…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -86,19 +103,20 @@ function Workspace({ user }) {
           onClick={() => {
             setCreating(true)
             setSelectedId(null)
+            setView('main')
           }}
         >
           Nova empresa
         </button>
 
         <div className="list">
-          {loading && <p className="muted pad">Carregando…</p>}
-          {!loading && results.length === 0 && (
+          {view === 'main' && loading && <p className="muted pad">Carregando…</p>}
+          {view === 'main' && !loading && results.length === 0 && (
             <p className="muted pad">
               {query ? 'Nada encontrado para essa busca.' : 'Nenhuma empresa ainda. Cadastre a primeira.'}
             </p>
           )}
-          {results.map(({ company, matchedContact }) => (
+          {view === 'main' && results.map(({ company, matchedContact }) => (
             <button
               key={company.id}
               className={'list-item' + (company.id === selectedId ? ' active' : '')}
@@ -118,42 +136,51 @@ function Workspace({ user }) {
         </div>
 
         <div className="user-box">
-          <span className="small muted">{user.email}</span>
-          <span>
-            <button className="btn link" onClick={vault.lock}>
-              Bloquear
+          <span className="small muted" style={{ textAlign: 'center', marginBottom: '4px' }}>{user.email}</span>
+          {isAdmin && (
+            <button className="btn link" onClick={() => setView('trash')} style={{ textAlign: 'center' }}>
+              Lixeira
             </button>
-            <button className="btn link" onClick={() => supabase.auth.signOut()}>
-              Sair
-            </button>
-          </span>
+          )}
+          <button className="btn link" onClick={() => supabase.auth.signOut()} style={{ textAlign: 'center' }}>
+            Sair
+          </button>
         </div>
       </aside>
 
       <main className="content">
         {error && <div className="alert">{error}</div>}
 
-        {creating && (
-          <CompanyForm onSaved={handleSaved} onCancel={() => setCreating(false)} />
-        )}
+        {view === 'trash' ? (
+          <TrashView isAdmin={isAdmin} onChanged={load} />
+        ) : (
+          <>
+            {creating && (
+              <CompanyForm onSaved={handleSaved} onCancel={() => setCreating(false)} />
+            )}
 
-        {!creating && selected && (
-          <CompanyDetail
-            key={selected.id}
-            company={selected}
-            onChanged={load}
-            onDeleted={handleDeleted}
-          />
-        )}
+            {!creating && selected && (
+              <CompanyDetail
+                key={selected.id}
+                company={selected}
+                user={user}
+                onChanged={load}
+                onDeleted={handleDeleted}
+              />
+            )}
 
-        {!creating && !selected && (
-          <div className="empty">
-            <h2>Selecione uma empresa</h2>
-            <p className="muted">
-              Escolha uma empresa na lista ao lado ou cadastre uma nova para ver os dados
-              técnicos e os contatos.
-            </p>
-          </div>
+            {!creating && !selected && (
+              <div className="content-empty">
+                <div className="empty">
+                  <h2>Selecione uma empresa</h2>
+                  <p className="muted">
+                    Escolha uma empresa na lista ao lado ou cadastre uma nova para ver os dados
+                    técnicos e os contatos.
+                  </p>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>
@@ -176,8 +203,8 @@ export default function App() {
   if (!ready) return null
   if (!session) return <Login />
   return (
-    <VaultGate>
+    <VaultProvider user={session.user}>
       <Workspace user={session.user} />
-    </VaultGate>
+    </VaultProvider>
   )
 }

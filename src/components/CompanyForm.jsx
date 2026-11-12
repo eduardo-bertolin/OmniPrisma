@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
-import { useVault } from './VaultGate'
+import { useVault } from './VaultProvider'
+
+const ACCESS_OPTIONS = ['AnyDesk', 'Remote Desktop', 'RDP', 'Cloud', 'VPN', 'SSH', 'TeamViewer']
 
 export default function CompanyForm({ initial, onSaved, onCancel }) {
   const vault = useVault()
   const [form, setForm] = useState({
     name: initial?.name || '',
-    document: initial?.document || '',
-    phone: initial?.phone || '',
+    access_method: initial?.access_method || '',
     email: initial?.email || '',
     anydesk: initial?.anydesk || '',
     anydesk_password: '',
@@ -64,22 +65,36 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
 
   return (
     <form className="card" onSubmit={handleSubmit}>
-      <h2>{initial ? 'Editar empresa' : 'Nova empresa'}</h2>
+      <div className="card-head">
+        <h2>{initial ? 'Editar empresa' : 'Nova empresa'}</h2>
+        <div className="actions">
+          <button type="button" className="btn" onClick={onCancel}>
+            Cancelar
+          </button>
+        </div>
+      </div>
 
-      <div className="grid">
-        <label className="span2">
+      <div className="form-grid">
+        <label>
           Nome da empresa
           <input value={form.name} onChange={set('name')} required autoFocus />
         </label>
         <label>
-          CNPJ
-          <input value={form.document} onChange={set('document')} />
+          Acesso via
+          <input
+            list="access-methods"
+            value={form.access_method}
+            onChange={set('access_method')}
+            placeholder="AnyDesk, Remote Desktop, Cloud…"
+            autoComplete="off"
+          />
+          <datalist id="access-methods">
+            {ACCESS_OPTIONS.map((option) => (
+              <option key={option} value={option} />
+            ))}
+          </datalist>
         </label>
         <label>
-          Telefone
-          <input value={form.phone} onChange={set('phone')} />
-        </label>
-        <label className="span2">
           E-mail
           <input type="email" value={form.email} onChange={set('email')} />
         </label>
@@ -111,16 +126,17 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
         </label>
         <label className="span2">
           Observações
-          <textarea rows="4" value={form.notes} onChange={set('notes')} />
+          <textarea
+            rows="4"
+            value={form.notes}
+            onChange={set('notes')}
+          />
         </label>
       </div>
 
       {error && <div className="alert">{error}</div>}
 
       <div className="actions">
-        <button type="button" className="btn" onClick={onCancel}>
-          Cancelar
-        </button>
         <button className="btn primary" disabled={busy || !ready}>
           {busy ? 'Salvando…' : 'Salvar empresa'}
         </button>

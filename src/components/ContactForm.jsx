@@ -5,6 +5,7 @@ export default function ContactForm({ companyId, initial, onSaved, onCancel }) {
   const [form, setForm] = useState({
     name: initial?.name || '',
     filial: initial?.filial || '',
+    sector: initial?.sector || '',
     phone: initial?.phone || '',
     email: initial?.email || '',
     notes: initial?.notes || '',
@@ -13,6 +14,36 @@ export default function ContactForm({ companyId, initial, onSaved, onCancel }) {
   const [error, setError] = useState('')
 
   const set = (field) => (e) => setForm({ ...form, [field]: e.target.value })
+
+  const formatPhone = (value) => {
+    const d = value.replace(/\D/g, '')
+    if (d.length < 2) return value
+    
+    let ddd, num
+    if (d.startsWith('55')) {
+        ddd = d.substring(2, 4)
+        num = d.substring(4)
+    } else {
+        ddd = d.substring(0, 2)
+        num = d.substring(2)
+    }
+    
+    let formatted = `+55 (${ddd})`
+    if (num.length > 0) {
+        if (num.length <= 4) {
+            formatted += ` ${num}`
+        } else if (num.length <= 8) {
+            formatted += ` ${num.substring(0, 4)}-${num.substring(4)}`
+        } else {
+            formatted += ` ${num.substring(0, 5)}-${num.substring(5)}`
+        }
+    }
+    return formatted
+  }
+
+  const handlePhoneBlur = () => {
+    setForm({ ...form, phone: formatPhone(form.phone) })
+  }
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -40,8 +71,12 @@ export default function ContactForm({ companyId, initial, onSaved, onCancel }) {
           <input value={form.filial} onChange={set('filial')} />
         </label>
         <label>
+          Setor
+          <input value={form.sector} onChange={set('sector')} placeholder="Ex.: Financeiro, TI…" />
+        </label>
+        <label>
           Telefone
-          <input value={form.phone} onChange={set('phone')} />
+          <input value={form.phone} onChange={set('phone')} onBlur={handlePhoneBlur} />
         </label>
         <label>
           E-mail

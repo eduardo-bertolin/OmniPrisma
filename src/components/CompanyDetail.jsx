@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 import CompanyForm from './CompanyForm'
 import ContactForm from './ContactForm'
-import { useVault } from './VaultGate'
+import { useVault } from './VaultProvider'
 
 function Info({ label, value }) {
   return (
@@ -62,20 +62,32 @@ function SecretField({ label, encrypted }) {
   )
 }
 
-export default function CompanyDetail({ company, onChanged, onDeleted }) {
+export default function CompanyDetail({ company, user, onChanged, onDeleted }) {
   const [editing, setEditing] = useState(false)
   const [contactForm, setContactForm] = useState(null) // null | 'new' | id do contato
 
   async function deleteCompany() {
     if (!confirm(`Excluir "${company.name}" e todos os contatos dela?`)) return
-    const { error } = await supabase.from('companies').delete().eq('id', company.id)
+    const { error } = await supabase
+      .from('companies')
+      .update({ 
+        deleted_at: new Date().toISOString(),
+        deleted_by: user.id 
+      })
+      .eq('id', company.id)
     if (error) return alert(error.message)
     onDeleted()
   }
 
   async function deleteContact(contact) {
     if (!confirm(`Excluir o contato "${contact.name}"?`)) return
-    const { error } = await supabase.from('contacts').delete().eq('id', contact.id)
+    const { error } = await supabase
+      .from('contacts')
+      .update({ 
+        deleted_at: new Date().toISOString(),
+        deleted_by: user.id 
+      })
+      .eq('id', contact.id)
     if (error) return alert(error.message)
     onChanged()
   }
@@ -101,22 +113,27 @@ export default function CompanyDetail({ company, onChanged, onDeleted }) {
         <div className="card-head">
           <h2>{company.name}</h2>
           <div className="actions">
-            <button className="btn" onClick={() => setEditing(true)}>
-              Editar
+            <button className="btn link" onClick={() => setEditing(true)} title="Editar empresa" style={{ padding: '4px' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
             </button>
-            <button className="btn danger" onClick={deleteCompany}>
-              Excluir
+            <button className="btn link danger" onClick={deleteCompany} title="Excluir empresa" style={{ padding: '4px' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
             </button>
           </div>
         </div>
 
         <dl className="info-grid">
+          <Info label="Acesso via" value={company.access_method} />
           <Info label="AnyDesk" value={company.anydesk} />
           <SecretField label="Senha do AnyDesk" encrypted={company.anydesk_password} />
           <Info label="VPN" value={company.vpn} />
           <SecretField label="Senha da VPN" encrypted={company.vpn_password} />
-          <Info label="CNPJ" value={company.document} />
-          <Info label="Telefone" value={company.phone} />
           <Info label="E-mail" value={company.email} />
         </dl>
 
@@ -169,7 +186,12 @@ export default function CompanyDetail({ company, onChanged, onDeleted }) {
             <div className="contact" key={ct.id}>
               <div>
                 <strong>{ct.name}</strong>
-                {ct.filial && <span className="muted"> · {ct.filial}</span>}
+                {(ct.filial || ct.sector) && (
+                  <span className="muted">
+                    {ct.filial ? ` · ${ct.filial}` : ''}
+                    {ct.sector ? ` · Setor: ${ct.sector}` : ''}
+                  </span>
+                )}
                 <div className="small">
                   {[ct.phone, ct.email].filter(Boolean).join('  |  ') || (
                     <span className="muted">Sem telefone ou e-mail</span>
@@ -178,11 +200,17 @@ export default function CompanyDetail({ company, onChanged, onDeleted }) {
                 {ct.notes && <p className="notes small">{ct.notes}</p>}
               </div>
               <div className="actions">
-                <button className="btn" onClick={() => setContactForm(ct.id)}>
-                  Editar
+                <button className="btn link" onClick={() => setContactForm(ct.id)} title="Editar contato" style={{ padding: '4px' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
                 </button>
-                <button className="btn danger" onClick={() => deleteContact(ct)}>
-                  Excluir
+                <button className="btn link danger" onClick={() => deleteContact(ct)} title="Excluir contato" style={{ padding: '4px' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
                 </button>
               </div>
             </div>
