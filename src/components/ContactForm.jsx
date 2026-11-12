@@ -5,6 +5,7 @@ export default function ContactForm({ companyId, initial, onSaved, onCancel }) {
   const [form, setForm] = useState({
     name: initial?.name || '',
     filial: initial?.filial || '',
+    sector: initial?.sector || '',
     phone: initial?.phone || '',
     email: initial?.email || '',
     notes: initial?.notes || '',
@@ -38,6 +39,10 @@ export default function ContactForm({ companyId, initial, onSaved, onCancel }) {
         <label>
           Filial
           <input value={form.filial} onChange={set('filial')} />
+        </label>
+        <label>
+          Setor
+          <input value={form.sector} onChange={set('sector')} placeholder="Ex.: Financeiro, TI…" />
         </label>
         <label>
           Telefone

@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
-import { useVault } from './VaultGate'
+import { useVault } from './VaultProvider'
+
+const ACCESS_OPTIONS = ['AnyDesk', 'Remote Desktop', 'RDP', 'Cloud', 'VPN', 'SSH', 'TeamViewer']
 
 export default function CompanyForm({ initial, onSaved, onCancel }) {
   const vault = useVault()
   const [form, setForm] = useState({
     name: initial?.name || '',
-    document: initial?.document || '',
-    phone: initial?.phone || '',
+    access_method: initial?.access_method || '',
     email: initial?.email || '',
     anydesk: initial?.anydesk || '',
     anydesk_password: '',
@@ -71,13 +72,19 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
           Nome da empresa
           <input value={form.name} onChange={set('name')} required autoFocus />
         </label>
-        <label>
-          CNPJ
-          <input value={form.document} onChange={set('document')} />
-        </label>
-        <label>
-          Telefone
-          <input value={form.phone} onChange={set('phone')} />
+        <label className="span2">
+          Acesso via
+          <input
+            list="access-methods"
+            value={form.access_method}
+            onChange={set('access_method')}
+            placeholder="AnyDesk, Remote Desktop, Cloud…"
+          />
+          <datalist id="access-methods">
+            {ACCESS_OPTIONS.map((option) => (
+              <option key={option} value={option} />
+            ))}
+          </datalist>
         </label>
         <label className="span2">
           E-mail

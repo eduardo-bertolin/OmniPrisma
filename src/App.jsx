@@ -3,13 +3,12 @@ import { supabase } from './supabaseClient'
 import Login from './components/Login'
 import CompanyForm from './components/CompanyForm'
 import CompanyDetail from './components/CompanyDetail'
-import VaultGate, { useVault } from './components/VaultGate'
+import VaultProvider from './components/VaultProvider'
 
 const norm = (s) =>
   (s || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 
 function Workspace({ user }) {
-  const vault = useVault()
   const [companies, setCompanies] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -41,10 +40,10 @@ function Workspace({ user }) {
     return companies
       .map((c) => {
         const companyText = norm(
-          [c.name, c.document, c.phone, c.email, c.anydesk, c.vpn, c.notes].join(' ')
+          [c.name, c.access_method, c.anydesk, c.vpn, c.email, c.notes].join(' ')
         )
         const matchedContact = c.contacts.find((ct) =>
-          norm([ct.name, <ct className="filial"></ct>, ct.phone, ct.email, ct.notes].join(' ')).includes(q)
+          norm([ct.name, ct.filial, ct.sector, ct.phone, ct.email, ct.notes].join(' ')).includes(q)
         )
         if (companyText.includes(q) || matchedContact) return { company: c, matchedContact }
         return null
@@ -76,7 +75,7 @@ function Workspace({ user }) {
         <input
           className="search"
           type="search"
-          placeholder="Buscar empresa, contato, AnyDesk, VPN…"
+          placeholder="Buscar empresa, contato, acesso via…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -120,9 +119,6 @@ function Workspace({ user }) {
         <div className="user-box">
           <span className="small muted">{user.email}</span>
           <span>
-            <button className="btn link" onClick={vault.lock}>
-              Bloquear
-            </button>
             <button className="btn link" onClick={() => supabase.auth.signOut()}>
               Sair
             </button>
@@ -176,8 +172,8 @@ export default function App() {
   if (!ready) return null
   if (!session) return <Login />
   return (
-    <VaultGate>
+    <VaultProvider user={session.user}>
       <Workspace user={session.user} />
-    </VaultGate>
+    </VaultProvider>
   )
 }

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 import CompanyForm from './CompanyForm'
 import ContactForm from './ContactForm'
-import { useVault } from './VaultGate'
+import { useVault } from './VaultProvider'
 
 function Info({ label, value }) {
   return (
@@ -111,12 +111,11 @@ export default function CompanyDetail({ company, onChanged, onDeleted }) {
         </div>
 
         <dl className="info-grid">
+          <Info label="Acesso via" value={company.access_method} />
           <Info label="AnyDesk" value={company.anydesk} />
           <SecretField label="Senha do AnyDesk" encrypted={company.anydesk_password} />
           <Info label="VPN" value={company.vpn} />
           <SecretField label="Senha da VPN" encrypted={company.vpn_password} />
-          <Info label="CNPJ" value={company.document} />
-          <Info label="Telefone" value={company.phone} />
           <Info label="E-mail" value={company.email} />
         </dl>
 
@@ -169,7 +168,12 @@ export default function CompanyDetail({ company, onChanged, onDeleted }) {
             <div className="contact" key={ct.id}>
               <div>
                 <strong>{ct.name}</strong>
-                {ct.filial && <span className="muted"> · {ct.filial}</span>}
+                {(ct.filial || ct.sector) && (
+                  <span className="muted">
+                    {ct.filial ? ` · ${ct.filial}` : ''}
+                    {ct.sector ? ` · Setor: ${ct.sector}` : ''}
+                  </span>
+                )}
                 <div className="small">
                   {[ct.phone, ct.email].filter(Boolean).join('  |  ') || (
                     <span className="muted">Sem telefone ou e-mail</span>
