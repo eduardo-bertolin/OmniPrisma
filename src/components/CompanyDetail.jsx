@@ -15,9 +15,16 @@ function Info({ label, value }) {
   }
 
   return (
-    <div className="info" onClick={copy} style={{ cursor: 'pointer' }} title="Clique para copiar">
+    <div className="info">
       <dt>{label}</dt>
-      <dd className={fading ? 'fade-copy' : ''}>{value || <span className="muted">—</span>}</dd>
+      <dd
+        onClick={copy}
+        style={{ cursor: 'pointer', display: 'inline-block' }}
+        title="Clique para copiar"
+        className={fading ? 'fade-copy' : ''}
+      >
+        {value || <span className="muted">—</span>}
+      </dd>
     </div>
   )
 }
