@@ -262,6 +262,19 @@ textarea:focus {
   font-size: 1.125rem;
 }
 
+/* Login */
+.login-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 20px;
+}
+.login {
+  width: 100%;
+  max-width: 400px;
+}
+
 /* Info grid */
 .info-grid {
   display: grid;
@@ -336,6 +349,7 @@ textarea:focus {
 .btn.primary {
   background: var(--accent);
   color: #fff;
+  font-weight: 600;
 }
 
 .btn.primary:hover {
@@ -346,7 +360,8 @@ textarea:focus {
   color: var(--accent);
   padding: 6px;
   border-radius: 6px;
-  text-align: left;
+  text-align: center;
+  font-weight: 600;
 }
 
 .btn.link:hover {
@@ -355,6 +370,7 @@ textarea:focus {
 
 .btn.link.danger {
   color: var(--danger);
+  font-weight: 600;
 }
 
 .btn.link.danger:hover {
