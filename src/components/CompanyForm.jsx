@@ -83,7 +83,7 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
           <input value={form.name} onChange={set('name')} required autoFocus />
         </label>
         <label>
-          Acesso via
+          Acesso da Base via
           <input
             list="access-methods"
             value={form.access_method}

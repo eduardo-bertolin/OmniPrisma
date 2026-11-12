@@ -177,7 +177,7 @@ export default function CompanyDetail({ company, user, onChanged, onDeleted }) {
         </div>
 
         <dl className="info-grid">
-          <Info label="Acesso via" value={company.access_method} />
+          <Info label="Acesso da Base via" value={company.access_method} />
           <Info label="AnyDesk" value={company.anydesk} />
           <SecretField label="Senha do AnyDesk" encrypted={company.anydesk_password} />
           <Info label="VPN" value={company.vpn} />
