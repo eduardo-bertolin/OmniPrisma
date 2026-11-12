@@ -8,6 +8,21 @@ CRUD interno de empresas e contatos (React + Vite + Supabase).
 2. No painel: SQL Editor > cole o conteúdo de `supabase.sql` > Run, e depois o de `supabase-cofre.sql` > Run
    - Se o banco já existe, rode `supabase-mudancas.sql` (cada bloco é um comando independente)
 3. No painel: Authentication > Users > Add user (crie seu e-mail e senha, marque "Auto Confirm User")
+   - **Ou via SQL direto** (rode no SQL Editor):
+     ```sql
+     -- Cria o usuário autenticado (confirma e-mail automaticamente)
+     select auth.admin_create_user(
+       email := 'seu@email.com',
+       password := 'sua_senha_segura',
+       email_confirm := true,
+       user_metadata := '{"name": "Seu Nome"}'::jsonb
+     );
+     -- Cria o perfil (role 'user' e exige troca de senha no primeiro login)
+     insert into public.profiles (id, email, role, must_change_password)
+     select id, email, 'user', true
+     from auth.users
+     where email = 'seu@email.com';
+     ```
 4. No painel: Project Settings > API > copie "Project URL" e a chave "anon public"
 5. Copie `.env.example` para `.env` e preencha as duas variáveis
 6. No terminal:
