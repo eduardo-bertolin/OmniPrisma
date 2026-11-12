@@ -177,7 +177,7 @@ p {
 label {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   font-size: 0.8125rem;
   color: var(--text-dim);
 }
@@ -191,6 +191,13 @@ textarea {
   border-radius: 8px;
   padding: 10px 14px;
   transition: border-color 0.2s;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: vertical;
 }
 
 input:focus,
@@ -205,6 +212,7 @@ textarea:focus {
   flex-direction: column;
   gap: 32px;
   max-width: 900px;
+  margin: 0 auto;
 }
 
 .card {
@@ -237,7 +245,7 @@ textarea:focus {
 .info dt {
   font-size: 0.75rem;
   color: var(--text-faint);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .info dd {
