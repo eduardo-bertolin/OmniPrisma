@@ -3,20 +3,71 @@ import { supabase } from '../supabaseClient'
 import CompanyForm from './CompanyForm'
 import ContactForm from './ContactForm'
 import { useVault } from './VaultProvider'
+import { toast } from 'react-toastify'
 
 function Info({ label, value }) {
+  const [fading, setFading] = useState(false)
+
+  async function copy() {
+    if (!value) return
+    await navigator.clipboard.writeText(value)
+    setFading(true)
+    toast.success('Copiado para a área de transferência!')
+    setTimeout(() => setFading(false), 600)
+  }
+
   return (
     <div className="info">
       <dt>{label}</dt>
-      <dd>{value || <span className="muted">—</span>}</dd>
+      <dd
+        onClick={copy}
+        style={{ cursor: 'pointer', display: 'inline-block' }}
+        title="Clique para copiar"
+        className={fading ? 'fade-copy' : ''}
+      >
+        {value || <span className="muted">—</span>}
+      </dd>
     </div>
   )
 }
+
+function IconIndicator({ label, value, iconSrc, alt }) {
+  const isNull = value === null || value === undefined;
+  const checked = value === true;
+  
+  return (
+    <div className="info">
+      <dt>{label}</dt>
+      <dd style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <img 
+          src={iconSrc} 
+          alt={alt} 
+          style={{ 
+            width: '20px', 
+            height: '20px',
+            filter: isNull ? 'grayscale(100%) opacity(30%)' : (checked ? 'none' : 'grayscale(100%) opacity(50%)'),
+            opacity: isNull ? 0.3 : (checked ? 1 : 0.5)
+          }} 
+        />
+        <span style={{ 
+          color: isNull ? 'var(--text-dim)' : (checked ? 'var(--success, #22c55e)' : 'var(--danger, #ef4444)'),
+          fontWeight: 600,
+          fontSize: '0.875rem'
+        }}>
+          {isNull ? '?' : (checked ? '✓' : '✗')}
+        </span>
+      </dd>
+    </div>
+  )
+}
+
+
 
 function SecretField({ label, encrypted }) {
   const vault = useVault()
   const [plain, setPlain] = useState(null)
   const [error, setError] = useState('')
+  const [fading, setFading] = useState(false)
 
   async function reveal() {
     try {
@@ -30,6 +81,9 @@ function SecretField({ label, encrypted }) {
     try {
       const text = plain ?? (await vault.decrypt(encrypted))
       await navigator.clipboard.writeText(text)
+      setFading(true)
+      toast.success('Senha copiada para a área de transferência!')
+      setTimeout(() => setFading(false), 600)
     } catch {
       setError('Falha ao copiar')
     }
@@ -42,17 +96,14 @@ function SecretField({ label, encrypted }) {
         {!encrypted ? (
           <span className="muted">—</span>
         ) : (
-          <span className="secret">
-            <span className="mono">{plain ?? '••••••••'}</span>
+          <span className="secret" onClick={copy} style={{ cursor: 'pointer' }} title="Clique para copiar">
+            <span className={`mono ${fading ? 'fade-copy' : ''}`}>{plain ?? '••••••••'}</span>
             <button
               type="button"
               className="btn link"
-              onClick={plain === null ? reveal : () => setPlain(null)}
+              onClick={(e) => { e.stopPropagation(); plain === null ? reveal() : setPlain(null) }}
             >
               {plain === null ? 'Mostrar' : 'Ocultar'}
-            </button>
-            <button type="button" className="btn link" onClick={copy}>
-              Copiar
             </button>
           </span>
         )}
@@ -129,12 +180,29 @@ export default function CompanyDetail({ company, user, onChanged, onDeleted }) {
         </div>
 
         <dl className="info-grid">
-          <Info label="Acesso via" value={company.access_method} />
+          <Info label="Acesso da Base via" value={company.access_method} />
           <Info label="AnyDesk" value={company.anydesk} />
           <SecretField label="Senha do AnyDesk" encrypted={company.anydesk_password} />
-          <Info label="VPN" value={company.vpn} />
-          <SecretField label="Senha da VPN" encrypted={company.vpn_password} />
+          {company.vpn && (
+            <>
+              <Info label="VPN" value={company.vpn} />
+              {company.vpn_user && <Info label="Usuário VPN" value={company.vpn_user} />}
+              <SecretField label="Senha da VPN" encrypted={company.vpn_password} />
+            </>
+          )}
           <Info label="E-mail" value={company.email} />
+          <IconIndicator 
+            label="Possui RH" 
+            value={company.has_rh}
+            iconSrc="/rh-cp.ico" 
+            alt="RH/Controle Ponto" 
+          />
+          <IconIndicator 
+            label="Possui SP" 
+            value={company.has_sp}
+            iconSrc="/sp.ico" 
+            alt="Sistema de Ponto" 
+          />
         </dl>
 
         {company.notes && (

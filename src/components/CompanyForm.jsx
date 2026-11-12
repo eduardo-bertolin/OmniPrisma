@@ -13,7 +13,10 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
     anydesk: initial?.anydesk || '',
     anydesk_password: '',
     vpn: initial?.vpn || '',
+    vpn_user: initial?.vpn_user || '',
     vpn_password: '',
+    has_rh: Boolean(initial?.has_rh),
+    has_sp: Boolean(initial?.has_sp),
     notes: initial?.notes || '',
   })
   const [ready, setReady] = useState(false)
@@ -41,6 +44,7 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
   }, [])
 
   const set = (field) => (e) => setForm({ ...form, [field]: e.target.value })
+  const setCheckbox = (field) => (e) => setForm({ ...form, [field]: e.target.checked })
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -80,7 +84,7 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
           <input value={form.name} onChange={set('name')} required autoFocus />
         </label>
         <label>
-          Acesso via
+          Acesso da Base via
           <input
             list="access-methods"
             value={form.access_method}
@@ -116,6 +120,10 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
           <input value={form.vpn} onChange={set('vpn')} />
         </label>
         <label>
+          Usuário da VPN
+          <input value={form.vpn_user} onChange={set('vpn_user')} />
+        </label>
+        <label>
           Senha da VPN (criptografada)
           <input
             type="password"
@@ -131,6 +139,16 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
             value={form.notes}
             onChange={set('notes')}
           />
+        </label>
+        <label style={{ flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
+          <input type="checkbox" checked={form.has_rh} onChange={setCheckbox('has_rh')} style={{ width: 'auto' }} />
+          <img src="/rh-cp.ico" alt="RH" style={{ width: '20px', height: '20px', marginRight: '8px' }} />
+          Possui controle ponto e refeitório
+        </label>
+        <label style={{ flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
+          <input type="checkbox" checked={form.has_sp} onChange={setCheckbox('has_sp')} style={{ width: 'auto' }} />
+          <img src="/sp.ico" alt="SP" style={{ width: '20px', height: '20px', marginRight: '8px' }} />
+          Possui sistema de ponto
         </label>
       </div>
 

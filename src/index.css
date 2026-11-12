@@ -70,7 +70,7 @@ p {
 /* Layout */
 .layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: minmax(200px, 280px) 1fr;
   height: 100%;
 }
 
@@ -82,6 +82,7 @@ p {
   background: var(--surface);
   border-right: 1px solid var(--line);
   min-height: 0;
+  overflow-y: auto;
 }
 
 .content {
@@ -391,12 +392,15 @@ textarea:focus {
   cursor: default;
 }
 
-/* Actions */
-.actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 20px;
+/* Animação para copiar */
+@keyframes copyFade {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+.fade-copy {
+  animation: copyFade 0.6s ease;
 }
 
 /* Alerts */
@@ -438,7 +442,7 @@ textarea:focus {
 }
 
 /* Media */
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
     height: auto;
@@ -447,10 +451,11 @@ textarea:focus {
   .sidebar {
     border-right: 0;
     border-bottom: 1px solid var(--line);
+    max-height: 400px;
   }
 
   .list {
-    max-height: 260px;
+    max-height: 200px;
   }
 
   .card {
