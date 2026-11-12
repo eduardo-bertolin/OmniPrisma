@@ -75,11 +75,11 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
       </div>
 
       <div className="form-grid">
-        <label className="span2">
+        <label>
           Nome da empresa
           <input value={form.name} onChange={set('name')} required autoFocus />
         </label>
-        <label className="span2">
+        <label>
           Acesso via
           <input
             list="access-methods"
@@ -93,7 +93,7 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
             ))}
           </datalist>
         </label>
-        <label className="span2">
+        <label>
           E-mail
           <input type="email" value={form.email} onChange={set('email')} />
         </label>
@@ -126,7 +126,7 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
         <label className="span2">
           Observações
           <textarea
-            rows="3"
+            rows="4"
             value={form.notes}
             onChange={set('notes')}
           />
