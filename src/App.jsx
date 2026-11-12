@@ -136,12 +136,12 @@ function Workspace({ user }) {
         </div>
 
         <div className="user-box">
-          <span className="small muted">
-            {user.email}
+          <div className="user-box-top">
+            <span className="small muted">{user.email}</span>
             {isAdmin && (
               <svg 
                 width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" 
-                style={{ color: 'var(--accent)', marginLeft: '8px', cursor: 'pointer', verticalAlign: 'middle' }}
+                style={{ color: 'var(--accent)', cursor: 'pointer' }}
                 onClick={() => setView('trash')}
                 title="Lixeira"
               >
@@ -149,12 +149,10 @@ function Workspace({ user }) {
                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
               </svg>
             )}
-          </span>
-          <span>
-            <button className="btn link" onClick={() => supabase.auth.signOut()}>
-              Sair
-            </button>
-          </span>
+          </div>
+          <button className="btn link" onClick={() => supabase.auth.signOut()} style={{ padding: '0', fontSize: '0.8125rem' }}>
+            Sair
+          </button>
         </div>
       </aside>
 

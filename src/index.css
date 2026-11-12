@@ -162,15 +162,16 @@ p {
 /* User box */
 .user-box {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  gap: 4px;
   padding-top: 24px;
   border-top: 1px solid var(--line);
 }
 
-.user-box .muted {
-  font-size: 0.8125rem;
+.user-box-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Forms */
