@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 
-export default function PasswordChange({ user, onComplete }) {
+export default function PasswordChange({ user, onComplete, isSettings = false }) {
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [error, setError] = useState('')
@@ -20,9 +20,8 @@ export default function PasswordChange({ user, onComplete }) {
       const { error: authError } = await supabase.auth.updateUser({ password })
       if (authError) throw authError
 
-      // 2. Marca no perfil que a senha foi trocada (usando upsert para garantir que o registro exista)
-      console.log('Tentando upsert do perfil para user:', user.id)
-      const { data, error: profError } = await supabase
+      // 2. Marca no perfil que a senha foi trocada
+      const { error: profError } = await supabase
         .from('profiles')
         .upsert({ 
           id: user.id,
@@ -30,7 +29,6 @@ export default function PasswordChange({ user, onComplete }) {
           email: user.email 
         })
       
-      console.log('Resultado do upsert:', { data, profError })
       if (profError) throw profError
 
       onComplete()
@@ -42,39 +40,45 @@ export default function PasswordChange({ user, onComplete }) {
   }
 
   return (
-    <div className="login-wrap">
-      <form className="card login" onSubmit={handleSubmit}>
-        <div className="brand">
-          <span className="brand-mark" aria-hidden="true" />
-          Nova Senha
-        </div>
-        <p className="muted small" style={{ margin: 0 }}>
+    <form className="card" onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
+      <div className="card-head">
+        <h2>{isSettings ? 'Alterar Senha' : 'Nova Senha'}</h2>
+        {isSettings && (
+          <button type="button" className="btn" onClick={onComplete}>
+            Voltar
+          </button>
+        )}
+      </div>
+      
+      {!isSettings && (
+        <p className="muted small" style={{ marginBottom: '16px' }}>
           Este é seu primeiro acesso. Por segurança, você deve cadastrar uma nova senha pessoal.
         </p>
-        <label>
-          Nova Senha
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            autoFocus
-          />
-        </label>
-        <label>
-          Confirmar Senha
-          <input
-            type="password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            required
-          />
-        </label>
-        {error && <div className="alert">{error}</div>}
-        <button className="btn primary full" disabled={busy}>
-          {busy ? 'Salvando…' : 'Salvar e Acessar'}
-        </button>
-      </form>
-    </div>
+      )}
+
+      <label>
+        Nova Senha
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          autoFocus
+        />
+      </label>
+      <label>
+        Confirmar Senha
+        <input
+          type="password"
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          required
+        />
+      </label>
+      {error && <div className="alert">{error}</div>}
+      <button className="btn primary full" disabled={busy} style={{ marginTop: '16px' }}>
+        {busy ? 'Salvando…' : 'Salvar Senha'}
+      </button>
+    </form>
   )
 }

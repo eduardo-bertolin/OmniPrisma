@@ -110,19 +110,20 @@ function Workspace({ user }) {
         </button>
 
         <div className="list">
-          {view === 'main' && loading && <p className="muted pad">Carregando…</p>}
-          {view === 'main' && !loading && results.length === 0 && (
+          {loading && <p className="muted pad">Carregando…</p>}
+          {!loading && results.length === 0 && (
             <p className="muted pad">
               {query ? 'Nada encontrado para essa busca.' : 'Nenhuma empresa ainda. Cadastre a primeira.'}
             </p>
           )}
-          {view === 'main' && results.map(({ company, matchedContact }) => (
+          {!loading && results.map(({ company, matchedContact }) => (
             <button
               key={company.id}
               className={'list-item' + (company.id === selectedId ? ' active' : '')}
               onClick={() => {
                 setSelectedId(company.id)
                 setCreating(false)
+                setView('main')
               }}
             >
               <strong>{company.name}</strong>
@@ -136,7 +137,7 @@ function Workspace({ user }) {
         </div>
 
         <div className="user-box">
-          <span className="small muted" style={{ textAlign: 'center', marginBottom: '4px' }}>{user.email}</span>
+          <span className="small muted" style={{ textAlign: 'center', marginBottom: '4px', cursor: 'pointer' }} onClick={() => setView('settings')}>{user.email}</span>
           {isAdmin && (
             <button className="btn link" onClick={() => setView('trash')} style={{ textAlign: 'center' }}>
               Lixeira
@@ -153,6 +154,10 @@ function Workspace({ user }) {
 
         {view === 'trash' ? (
           <TrashView isAdmin={isAdmin} onChanged={load} />
+        ) : view === 'settings' ? (
+          <div className="content-empty">
+            <PasswordChange user={user} onComplete={() => setView('main')} isSettings={true} />
+          </div>
         ) : (
           <>
             {creating && (
