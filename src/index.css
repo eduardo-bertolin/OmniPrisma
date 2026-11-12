@@ -236,7 +236,7 @@ textarea:focus {
 .stack {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 24px;
   max-width: 900px;
   margin: 0 auto;
 }
@@ -245,7 +245,7 @@ textarea:focus {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 14px;
-  padding: 28px;
+  padding: 24px;
   max-width: 900px;
   width: 100%;
   margin: 0 auto;
@@ -255,7 +255,7 @@ textarea:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .card h2 {
