@@ -96,20 +96,6 @@ p {
   height: 100%;
 }
 
-/* Company Detail Grid */
-.detail-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  align-items: start;
-}
-
-@media (max-width: 1024px) {
-  .detail-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 .brand {
   display: flex;
   align-items: center;
@@ -229,11 +215,22 @@ textarea:focus {
 }
 
 /* Cards */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 28px;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .card-head {

@@ -108,7 +108,7 @@ export default function CompanyDetail({ company, user, onChanged, onDeleted }) {
   const contacts = [...company.contacts].sort((a, b) => a.name.localeCompare(b.name))
 
   return (
-    <div className="detail-grid">
+    <div className="stack">
       <section className="card">
         <div className="card-head">
           <h2>{company.name}</h2>
