@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { decryptText, deriveKey, encryptText, newSalt } from '../crypto'
+import { toast } from 'react-toastify'
 
 const VaultContext = createContext(null)
 export const useVault = () => useContext(VaultContext)
@@ -13,15 +14,14 @@ export default function VaultProvider({ user, password, children }) {
   const [submittedPassword, setSubmittedPassword] = useState(password)
 
   async function initializeVault() {
-    console.log("DEBUG: Iniciando initializeVault...");
-    alert("Iniciando inicialização do cofre...");
     try {
-      console.log("DEBUG: password atual:", submittedPassword);
       // 1. Gera uma chave mestra aleatória forte
       const masterKeyString = newSalt()
       
       // 2. Deriva a chave de proteção da senha do usuário
-      const protectionKey = await deriveKey(submittedPassword, user.id)
+      // Convertemos o user.id para Base64 para ser um 'salt' válido para o deriveKey
+      const saltB64 = btoa(user.id)
+      const protectionKey = await deriveKey(submittedPassword, saltB64)
       
       // 3. Criptografa a chave mestra com a chave de proteção
       const encryptedMasterKey = await encryptText(protectionKey, masterKeyString)
@@ -29,19 +29,17 @@ export default function VaultProvider({ user, password, children }) {
       // 4. Salva no banco
       const { error } = await supabase.from('user_vault_keys').insert({
         user_id: user.id,
-        encrypted_master_key: encryptedMasterKey
+        encrypted_master_key: encryptedMasterKey,
+        salt: 'legacy',
+        created_at: new Date().toISOString()
       })
       
-      if (error) {
-        console.error("DEBUG: Erro Supabase:", error);
-        throw error
-      }
+      if (error) throw error
       
-      // 5. Recarrega o cofre
+      toast.success('Cofre inicializado com sucesso!')
       window.location.reload()
     } catch (err) {
-      console.error("DEBUG: Erro capturado:", err);
-      setError('Falha ao inicializar cofre: ' + err.message)
+      toast.error('Falha ao inicializar cofre: ' + err.message)
     }
   }
 
@@ -62,11 +60,11 @@ export default function VaultProvider({ user, password, children }) {
           return
         }
 
-        const decryptionKey = await deriveKey(submittedPassword, user.id)
+        const saltB64 = btoa(user.id)
+        const decryptionKey = await deriveKey(submittedPassword, saltB64)
         const masterKey = await decryptText(decryptionKey, data.encrypted_master_key)
 
         if (alive) {
-          // Importa a chave mestra como chave AES
           const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(masterKey), 'AES-GCM', false, ['encrypt', 'decrypt'])
 
           setApi({
@@ -76,7 +74,10 @@ export default function VaultProvider({ user, password, children }) {
           setError('')
         }
       } catch (err) {
-        if (alive) setError('Falha ao abrir cofre: senha incorreta ou chave corrompida.')
+        if (alive) {
+          toast.error('Falha ao abrir cofre: senha incorreta.')
+          setError('Falha ao abrir cofre: senha incorreta ou chave corrompida.')
+        }
       }
     }
 
