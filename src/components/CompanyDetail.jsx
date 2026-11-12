@@ -62,20 +62,32 @@ function SecretField({ label, encrypted }) {
   )
 }
 
-export default function CompanyDetail({ company, onChanged, onDeleted }) {
+export default function CompanyDetail({ company, user, onChanged, onDeleted }) {
   const [editing, setEditing] = useState(false)
   const [contactForm, setContactForm] = useState(null) // null | 'new' | id do contato
 
   async function deleteCompany() {
     if (!confirm(`Excluir "${company.name}" e todos os contatos dela?`)) return
-    const { error } = await supabase.from('companies').delete().eq('id', company.id)
+    const { error } = await supabase
+      .from('companies')
+      .update({ 
+        deleted_at: new Date().toISOString(),
+        deleted_by: user.id 
+      })
+      .eq('id', company.id)
     if (error) return alert(error.message)
     onDeleted()
   }
 
   async function deleteContact(contact) {
     if (!confirm(`Excluir o contato "${contact.name}"?`)) return
-    const { error } = await supabase.from('contacts').delete().eq('id', contact.id)
+    const { error } = await supabase
+      .from('contacts')
+      .update({ 
+        deleted_at: new Date().toISOString(),
+        deleted_by: user.id 
+      })
+      .eq('id', contact.id)
     if (error) return alert(error.message)
     onChanged()
   }

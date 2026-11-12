@@ -141,3 +141,11 @@ input:focus, textarea:focus, .btn:focus-visible, .list-item:focus-visible {
 /* senhas criptografadas */
 .secret { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .mono { font-family: ui-monospace, Consolas, monospace; font-weight: 600; word-break: break-all; }
+
+/* lixeira */
+.trash-item {
+  display: flex; justify-content: space-between; gap: 12px;
+  padding: 14px 0; border-top: 1px solid var(--line);
+}
+.trash-item:first-of-type { border-top: 0; }
+.trash-item .actions { align-self: center; margin: 0; }

@@ -77,17 +77,35 @@ export default function VaultProvider({ user, children }) {
   )
 
   if (error) {
-    return (
-      <div className="login-wrap">
-        <div className="card login">
-          <div className="brand">
-            <span className="brand-mark" aria-hidden="true" />
-            Omni Prisma
+    // Se o erro for de conflito (409), tenta ignorar e buscar novamente (o registro já existe)
+    if (error.code === '23505') {
+       // O insert falhou porque já existe, prossegue para tentar buscar o salt
+    } else {
+        const faltouTabela =
+          error.includes('user_vault_keys') || error.includes('schema cache')
+
+        return (
+          <div className="login-wrap">
+            <div className="card login">
+              <div className="brand">
+                <span className="brand-mark" aria-hidden="true" />
+                Omni Prisma
+              </div>
+              <div className="alert">
+                {faltouTabela ? (
+                  <>
+                    A tabela <strong>user_vault_keys</strong> ainda não existe no Supabase.
+                    <br />
+                    Rode o arquivo <strong>supabase-mudancas.sql</strong> (comando 4) no SQL Editor.
+                  </>
+                ) : (
+                  <>Não foi possível abrir o cofre: {error}</>
+                )}
+              </div>
+            </div>
           </div>
-          <div className="alert">Não foi possível abrir o cofre: {error}</div>
-        </div>
-      </div>
-    )
+        )
+    }
   }
 
   if (!api) return null

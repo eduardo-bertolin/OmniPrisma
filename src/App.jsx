@@ -3,6 +3,8 @@ import { supabase } from './supabaseClient'
 import Login from './components/Login'
 import CompanyForm from './components/CompanyForm'
 import CompanyDetail from './components/CompanyDetail'
+import TrashView from './components/TrashView'
+import PasswordChange from './components/PasswordChange'
 import VaultProvider from './components/VaultProvider'
 
 const norm = (s) =>
@@ -11,21 +13,32 @@ const norm = (s) =>
 function Workspace({ user }) {
   const [companies, setCompanies] = useState([])
   const [loading, setLoading] = useState(true)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [mustChange, setMustChange] = useState(false)
+  const [view, setView] = useState('main')
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
   const [selectedId, setSelectedId] = useState(null)
   const [creating, setCreating] = useState(false)
 
   async function load() {
-    const { data, error } = await supabase
-      .from('companies')
-      .select('*, contacts(*)')
-      .order('name')
+    setLoading(true)
+    const [{ data, error }, { data: profile }] = await Promise.all([
+      supabase
+        .from('companies')
+        .select('*, contacts(*)')
+        .is('deleted_at', null)
+        .order('name'),
+      supabase.from('profiles').select('role, must_change_password').eq('id', user.id).maybeSingle(),
+    ])
+    
     if (error) setError(error.message)
     else {
       setError('')
-      setCompanies(data)
+      setCompanies(data || [])
     }
+    if (profile?.role === 'admin') setIsAdmin(true)
+    if (profile?.must_change_password) setMustChange(true)
     setLoading(false)
   }
 
@@ -64,10 +77,15 @@ function Workspace({ user }) {
     await load()
   }
 
+  // Renderização condicional SEM pular hooks - usa JSX condicional
+  if (mustChange) {
+    return <PasswordChange user={user} onComplete={() => setMustChange(false)} />
+  }
+
   return (
     <div className="layout">
       <aside className="sidebar">
-        <div className="brand">
+        <div className="brand" onClick={() => setView('main')} style={{ cursor: 'pointer' }}>
           <span className="brand-mark" aria-hidden="true" />
           Omni Prisma
         </div>
@@ -85,19 +103,29 @@ function Workspace({ user }) {
           onClick={() => {
             setCreating(true)
             setSelectedId(null)
+            setView('main')
           }}
         >
           Nova empresa
         </button>
 
+        {isAdmin && (
+          <button
+            className={'btn full' + (view === 'trash' ? ' primary' : '')}
+            onClick={() => setView('trash')}
+          >
+            Lixeira
+          </button>
+        )}
+
         <div className="list">
-          {loading && <p className="muted pad">Carregando…</p>}
-          {!loading && results.length === 0 && (
+          {view === 'main' && loading && <p className="muted pad">Carregando…</p>}
+          {view === 'main' && !loading && results.length === 0 && (
             <p className="muted pad">
               {query ? 'Nada encontrado para essa busca.' : 'Nenhuma empresa ainda. Cadastre a primeira.'}
             </p>
           )}
-          {results.map(({ company, matchedContact }) => (
+          {view === 'main' && results.map(({ company, matchedContact }) => (
             <button
               key={company.id}
               className={'list-item' + (company.id === selectedId ? ' active' : '')}
@@ -129,27 +157,34 @@ function Workspace({ user }) {
       <main className="content">
         {error && <div className="alert">{error}</div>}
 
-        {creating && (
-          <CompanyForm onSaved={handleSaved} onCancel={() => setCreating(false)} />
-        )}
+        {view === 'trash' ? (
+          <TrashView isAdmin={isAdmin} onChanged={load} />
+        ) : (
+          <>
+            {creating && (
+              <CompanyForm onSaved={handleSaved} onCancel={() => setCreating(false)} />
+            )}
 
-        {!creating && selected && (
-          <CompanyDetail
-            key={selected.id}
-            company={selected}
-            onChanged={load}
-            onDeleted={handleDeleted}
-          />
-        )}
+            {!creating && selected && (
+              <CompanyDetail
+                key={selected.id}
+                company={selected}
+                user={user}
+                onChanged={load}
+                onDeleted={handleDeleted}
+              />
+            )}
 
-        {!creating && !selected && (
-          <div className="empty">
-            <h2>Selecione uma empresa</h2>
-            <p className="muted">
-              Escolha uma empresa na lista ao lado ou cadastre uma nova para ver os dados
-              técnicos e os contatos.
-            </p>
-          </div>
+            {!creating && !selected && (
+              <div className="empty">
+                <h2>Selecione uma empresa</h2>
+                <p className="muted">
+                  Escolha uma empresa na lista ao lado ou cadastre uma nova para ver os dados
+                  técnicos e os contatos.
+                </p>
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>
