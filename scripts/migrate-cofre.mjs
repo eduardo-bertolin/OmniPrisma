@@ -76,7 +76,7 @@ if (!vaultRow?.salt) {
   vaultRow = { salt }
 }
 
-const newKey = await deriveKey(`omni-prisma:${userId}`, vaultRow.salt)
+const newKey = await deriveKey(`OmniPrisma:${userId}`, vaultRow.salt)
 
 // Chave antiga (senha mestra)
 let oldKey = null

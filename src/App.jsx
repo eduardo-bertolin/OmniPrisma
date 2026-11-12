@@ -87,7 +87,7 @@ function Workspace({ user }) {
       <aside className="sidebar">
         <div className="brand" onClick={() => setView('main')} style={{ cursor: 'pointer' }}>
           <span className="brand-mark" aria-hidden="true" />
-          Omni Prisma
+          OmniPrisma
         </div>
 
         <input
@@ -108,15 +108,6 @@ function Workspace({ user }) {
         >
           Nova empresa
         </button>
-
-        {isAdmin && (
-          <button
-            className={'btn full' + (view === 'trash' ? ' primary' : '')}
-            onClick={() => setView('trash')}
-          >
-            Lixeira
-          </button>
-        )}
 
         <div className="list">
           {view === 'main' && loading && <p className="muted pad">Carregando…</p>}
@@ -145,7 +136,20 @@ function Workspace({ user }) {
         </div>
 
         <div className="user-box">
-          <span className="small muted">{user.email}</span>
+          <span className="small muted">
+            {user.email}
+            {isAdmin && (
+              <svg 
+                width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" 
+                style={{ color: 'var(--accent)', marginLeft: '8px', cursor: 'pointer', verticalAlign: 'middle' }}
+                onClick={() => setView('trash')}
+                title="Lixeira"
+              >
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            )}
+          </span>
           <span>
             <button className="btn link" onClick={() => supabase.auth.signOut()}>
               Sair

@@ -1,4 +1,4 @@
-# Omni Prisma
+# OmniPrisma
 
 CRUD interno de empresas e contatos (React + Vite + Supabase).
 

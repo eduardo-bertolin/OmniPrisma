@@ -49,7 +49,7 @@ export default function VaultProvider({ user, children }) {
     async function setup() {
       try {
         const salt = await ensureSalt(user.id)
-        const derived = await deriveKey(`omni-prisma:${user.id}`, salt)
+        const derived = await deriveKey(`OmniPrisma:${user.id}`, salt)
         if (alive) {
           setKey(derived)
           setError('')
@@ -89,7 +89,7 @@ export default function VaultProvider({ user, children }) {
             <div className="card login">
               <div className="brand">
                 <span className="brand-mark" aria-hidden="true" />
-                Omni Prisma
+                OmniPrisma
               </div>
               <div className="alert">
                 {faltouTabela ? (

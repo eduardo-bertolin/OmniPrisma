@@ -21,7 +21,7 @@ export default function Login() {
       <form className="card login" onSubmit={handleSubmit}>
         <div className="brand">
           <span className="brand-mark" aria-hidden="true" />
-          Omni Prisma
+          OmniPrisma
         </div>
         <label>
           E-mail
