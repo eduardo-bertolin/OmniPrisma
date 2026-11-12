@@ -88,7 +88,7 @@ export default function VaultProvider({ user, children }) {
           <div className="login-wrap">
             <div className="card login">
               <div className="brand">
-                <img src="/logo.png" alt="OmniPrisma" style={{ width: '28px', height: '28px' }} />
+                <img src="/logo.jpg" alt="OmniPrisma" style={{ width: '28px', height: '28px' }} />
                 OmniPrisma
               </div>
               <div className="alert">
