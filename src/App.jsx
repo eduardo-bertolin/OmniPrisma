@@ -141,7 +141,7 @@ function Workspace({ user }) {
             {isAdmin && (
               <svg 
                 width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" 
-                style={{ color: 'var(--accent)', cursor: 'pointer' }}
+                style={{ color: 'var(--accent)', cursor: 'pointer', display: 'block', flexShrink: 0 }}
                 onClick={() => setView('trash')}
                 title="Lixeira"
               >
