@@ -183,8 +183,13 @@ export default function CompanyDetail({ company, user, onChanged, onDeleted }) {
           <Info label="Acesso da Base via" value={company.access_method} />
           <Info label="AnyDesk" value={company.anydesk} />
           <SecretField label="Senha do AnyDesk" encrypted={company.anydesk_password} />
-          <Info label="VPN" value={company.vpn} />
-          <SecretField label="Senha da VPN" encrypted={company.vpn_password} />
+          {company.vpn && (
+            <>
+              <Info label="VPN" value={company.vpn} />
+              {company.vpn_user && <Info label="Usuário VPN" value={company.vpn_user} />}
+              <SecretField label="Senha da VPN" encrypted={company.vpn_password} />
+            </>
+          )}
           <Info label="E-mail" value={company.email} />
           <IconIndicator 
             label="Possui RH" 

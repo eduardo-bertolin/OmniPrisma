@@ -13,6 +13,7 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
     anydesk: initial?.anydesk || '',
     anydesk_password: '',
     vpn: initial?.vpn || '',
+    vpn_user: initial?.vpn_user || '',
     vpn_password: '',
     has_rh: Boolean(initial?.has_rh),
     has_sp: Boolean(initial?.has_sp),
@@ -117,6 +118,10 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
         <label>
           VPN utilizada
           <input value={form.vpn} onChange={set('vpn')} />
+        </label>
+        <label>
+          Usuário VPN
+          <input value={form.vpn_user} onChange={set('vpn_user')} />
         </label>
         <label>
           Senha da VPN (criptografada)
