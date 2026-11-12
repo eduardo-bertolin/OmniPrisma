@@ -48,8 +48,11 @@ export default function VaultProvider({ user, children }) {
 
     async function setup() {
       try {
-        const salt = await ensureSalt(user.id)
-        const derived = await deriveKey(`OmniPrisma:${user.id}`, salt)
+        const SHARED_SEED = 'OmniPrisma:CompanySharedKey2026'
+        const SHARED_SALT = 'static_company_salt_value' 
+        
+        const derived = await deriveKey(SHARED_SEED, SHARED_SALT)
+        
         if (alive) {
           setKey(derived)
           setError('')
@@ -65,7 +68,7 @@ export default function VaultProvider({ user, children }) {
     return () => {
       alive = false
     }
-  }, [user.id])
+  }, [])
 
   const api = useMemo(
     () =>
@@ -77,35 +80,19 @@ export default function VaultProvider({ user, children }) {
   )
 
   if (error) {
-    // Se o erro for de conflito (409), tenta ignorar e buscar novamente (o registro já existe)
-    if (error.code === '23505') {
-       // O insert falhou porque já existe, prossegue para tentar buscar o salt
-    } else {
-        const faltouTabela =
-          error.includes('user_vault_keys') || error.includes('schema cache')
-
-        return (
-          <div className="login-wrap">
-            <div className="card login">
-              <div className="brand">
-                <img src="/logo.svg" alt="OmniPrisma" style={{ width: '36px', height: '36px' }} />
-                OmniPrisma
-              </div>
-              <div className="alert">
-                {faltouTabela ? (
-                  <>
-                    A tabela <strong>user_vault_keys</strong> ainda não existe no Supabase.
-                    <br />
-                    Rode o arquivo <strong>supabase-mudancas.sql</strong> (comando 4) no SQL Editor.
-                  </>
-                ) : (
-                  <>Não foi possível abrir o cofre: {error}</>
-                )}
-              </div>
-            </div>
+    return (
+      <div className="login-wrap">
+        <div className="card login">
+          <div className="brand">
+            <img src="/logo.svg" alt="OmniPrisma" style={{ width: '36px', height: '36px' }} />
+            OmniPrisma
           </div>
-        )
-    }
+          <div className="alert">
+            Não foi possível inicializar o cofre: {error}
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (!api) return null
