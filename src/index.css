@@ -221,6 +221,7 @@ textarea:focus {
   border-radius: 14px;
   padding: 28px;
   max-width: 900px;
+  margin: 0 auto;
 }
 
 .card-head {
