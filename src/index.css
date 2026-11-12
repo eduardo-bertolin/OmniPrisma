@@ -178,14 +178,15 @@ p {
   gap: 8px;
   padding-top: 24px;
   border-top: 1px solid var(--line);
-  align-items: center;
+  align-items: stretch;
 }
 
 .user-box-top {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  gap: 4px;
+  margin-bottom: 4px;
 }
 
 /* Forms */
