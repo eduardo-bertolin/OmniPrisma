@@ -85,7 +85,15 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent-main); }
 .btn:hover { background: rgba(255, 255, 255, 0.06); }
 .btn.primary { background: var(--accent-main); color: #fff; border: 0; font-weight: 500; }
 .btn.primary:hover { background: var(--accent-hover); }
+.btn.danger { color: var(--danger); border-color: var(--danger); }
+.btn.danger:hover { background: var(--danger-soft); }
 .btn.link { border: 0; background: transparent; color: var(--accent-main); }
+.btn.full { width: 100%; }
+
+.stack { display: flex; flex-direction: column; gap: 24px; max-width: 860px; }
+.actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 16px; }
+
+.empty { max-width: 460px; margin: 15vh auto 0; text-align: center; }
 
 .alert { background: var(--danger-soft); color: var(--danger); padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; }
 
