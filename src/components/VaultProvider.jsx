@@ -49,7 +49,8 @@ export default function VaultProvider({ user, children }) {
     async function setup() {
       try {
         const SHARED_SEED = 'OmniPrisma:CompanySharedKey2026'
-        const SHARED_SALT = 'static_company_salt_value' 
+        // Salt fixo válido em base64 (16 bytes)
+        const SHARED_SALT = 'c29tZXJhbmRvbXNhbHQ=' 
         
         const derived = await deriveKey(SHARED_SEED, SHARED_SALT)
         
