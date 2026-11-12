@@ -134,10 +134,17 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
         </label>
       </div>
 
-      {error && <div className="alert">{error}</div>}
+      {error && (
+        <div className="alert" style={{ background: 'var(--accent-soft)', color: 'var(--text)' }}>
+          <strong>Atenção:</strong> {error}
+          <br />
+          Como a senha antiga não pôde ser lida, ao salvar este formulário, 
+          as senhas serão substituídas pelos novos valores inseridos aqui.
+        </div>
+      )}
 
       <div className="actions">
-        <button className="btn primary" disabled={busy || !ready}>
+        <button className="btn primary" disabled={busy}>
           {busy ? 'Salvando…' : 'Salvar empresa'}
         </button>
       </div>
