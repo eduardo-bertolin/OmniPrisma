@@ -4,11 +4,15 @@
 const enc = new TextEncoder()
 const dec = new TextDecoder()
 
-const toB64 = (bytes) => btoa(String.fromCharCode(...bytes))
-const fromB64 = (str) => Uint8Array.from(atob(str), (c) => c.charCodeAt(0))
+export const toB64 = (bytes) => btoa(String.fromCharCode(...bytes))
+export const fromB64 = (str) => Uint8Array.from(atob(str), (c) => c.charCodeAt(0))
 
 export function newSalt() {
   return toB64(crypto.getRandomValues(new Uint8Array(16)))
+}
+
+export function newKey() {
+  return toB64(crypto.getRandomValues(new Uint8Array(32)))
 }
 
 export async function deriveKey(passphrase, saltB64) {
