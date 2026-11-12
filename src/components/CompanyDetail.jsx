@@ -13,7 +13,10 @@ function Info({ label, value }) {
   )
 }
 
-function IconIndicator({ label, checked, iconSrc, alt }) {
+function IconIndicator({ label, value, iconSrc, alt }) {
+  const isNull = value === null || value === undefined;
+  const checked = value === true;
+  
   return (
     <div className="info">
       <dt>{label}</dt>
@@ -24,16 +27,16 @@ function IconIndicator({ label, checked, iconSrc, alt }) {
           style={{ 
             width: '20px', 
             height: '20px',
-            filter: checked ? 'none' : 'grayscale(100%) opacity(50%)',
-            opacity: checked ? 1 : 0.5
+            filter: isNull ? 'grayscale(100%) opacity(30%)' : (checked ? 'none' : 'grayscale(100%) opacity(50%)'),
+            opacity: isNull ? 0.3 : (checked ? 1 : 0.5)
           }} 
         />
         <span style={{ 
-          color: checked ? 'var(--success, #22c55e)' : 'var(--danger, #ef4444)',
-          fontWeight: 500,
+          color: isNull ? 'var(--text-dim)' : (checked ? 'var(--success, #22c55e)' : 'var(--danger, #ef4444)'),
+          fontWeight: 600,
           fontSize: '0.875rem'
         }}>
-          {checked ? '✓' : '✗'}
+          {isNull ? '?' : (checked ? '✓' : '✗')}
         </span>
       </dd>
     </div>
@@ -166,13 +169,13 @@ export default function CompanyDetail({ company, user, onChanged, onDeleted }) {
           <Info label="E-mail" value={company.email} />
           <IconIndicator 
             label="Possui RH" 
-            checked={company.has_rh || false} 
+            value={company.has_rh}
             iconSrc="/rh-cp.ico" 
             alt="RH/Controle Ponto" 
           />
           <IconIndicator 
             label="Possui SP" 
-            checked={company.has_sp || false} 
+            value={company.has_sp}
             iconSrc="/sp.ico" 
             alt="Sistema de Ponto" 
           />
