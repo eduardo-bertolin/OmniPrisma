@@ -120,7 +120,7 @@ export default function CompanyForm({ initial, onSaved, onCancel }) {
           <input value={form.vpn} onChange={set('vpn')} />
         </label>
         <label>
-          Usuário VPN
+          Usuário da VPN
           <input value={form.vpn_user} onChange={set('vpn_user')} />
         </label>
         <label>
