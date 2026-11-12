@@ -1,102 +1,97 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { decryptText, deriveKey, encryptText, newSalt } from '../crypto'
-
-// O cofre agora é aberto pelo próprio login: a chave de criptografia é derivada
-// do usuário (id + salt salvo no banco). Não existe mais "senha mestra" nem
-// tela de desbloqueio.
 
 const VaultContext = createContext(null)
 export const useVault = () => useContext(VaultContext)
 
-async function ensureSalt(userId) {
-  const { data, error } = await supabase
-    .from('user_vault_keys')
-    .select('salt')
-    .eq('user_id', userId)
-    .maybeSingle()
-
-  if (error) throw error
-  if (data?.salt) return data.salt
-
-  const salt = newSalt()
-  const { error: insertError } = await supabase
-    .from('user_vault_keys')
-    .insert({ user_id: userId, salt })
-
-  if (insertError) {
-    // Corrida entre abas: outra sessão pode ter criado o sal antes.
-    const { data: again, error: selectError } = await supabase
-      .from('user_vault_keys')
-      .select('salt')
-      .eq('user_id', userId)
-      .maybeSingle()
-    if (selectError) throw selectError
-    if (again?.salt) return again.salt
-    throw insertError
-  }
-
-  return salt
-}
-
-export default function VaultProvider({ user, children }) {
-  const [key, setKey] = useState(null)
+export default function VaultProvider({ user, password, children }) {
+  const [api, setApi] = useState(null)
   const [error, setError] = useState('')
+  const [needsInit, setNeedsInit] = useState(false)
+  const [inputPassword, setInputPassword] = useState('')
+  const [submittedPassword, setSubmittedPassword] = useState(password)
+
+  async function initializeVault() {
+    try {
+      const masterKeyString = newSalt()
+      const protectionKey = await deriveKey(submittedPassword, user.id)
+      const encryptedMasterKey = await encryptText(protectionKey, masterKeyString)
+      const { error } = await supabase.from('user_vault_keys').insert({
+        user_id: user.id,
+        encrypted_master_key: encryptedMasterKey
+      })
+      if (error) throw error
+      window.location.reload()
+    } catch (err) {
+      setError('Falha ao inicializar cofre: ' + err.message)
+    }
+  }
 
   useEffect(() => {
     let alive = true
-
     async function setup() {
       try {
-        const SHARED_SEED = 'OmniPrisma:CompanySharedKey2026'
-        // Salt fixo válido em base64 (16 bytes)
-        const SHARED_SALT = 'c29tZXJhbmRvbXNhbHQ=' 
-        
-        const derived = await deriveKey(SHARED_SEED, SHARED_SALT)
-        
+        const { data, error } = await supabase
+          .from('user_vault_keys')
+          .select('encrypted_master_key')
+          .eq('user_id', user.id)
+          .maybeSingle()
+
+        if (error) throw error
+
+        if (!data) {
+          setNeedsInit(true)
+          return
+        }
+
+        const decryptionKey = await deriveKey(submittedPassword, user.id)
+        const masterKey = await decryptText(decryptionKey, data.encrypted_master_key)
+
         if (alive) {
-          setKey(derived)
+          const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(masterKey), 'AES-GCM', false, ['encrypt', 'decrypt'])
+
+          setApi({
+            encrypt: (text) => encryptText(key, text),
+            decrypt: (value) => decryptText(key, value),
+          })
           setError('')
         }
       } catch (err) {
-        if (alive) setError(err.message)
+        if (alive) setError('Falha ao abrir cofre: senha incorreta ou chave corrompida.')
       }
     }
 
-    setKey(null)
-    setup()
+    if (user && submittedPassword) setup()
+    
+    return () => { alive = false }
+  }, [user, submittedPassword])
 
-    return () => {
-      alive = false
-    }
-  }, [])
-
-  const api = useMemo(
-    () =>
-      key && {
-        encrypt: (text) => encryptText(key, text),
-        decrypt: (value) => decryptText(key, value),
-      },
-    [key]
+  if (!submittedPassword) return (
+    <div className="login-wrap">
+      <form className="card login" onSubmit={(e) => { e.preventDefault(); setSubmittedPassword(inputPassword) }}>
+        <h2>Desbloquear Cofre</h2>
+        <label>
+          Senha da sua conta
+          <input type="password" onChange={(e) => setInputPassword(e.target.value)} autoFocus required autoComplete="new-password" />
+        </label>
+        <button className="btn primary full" type="submit">Desbloquear</button>
+      </form>
+    </div>
   )
 
-  if (error) {
-    return (
-      <div className="login-wrap">
-        <div className="card login">
-          <div className="brand">
-            <img src="/logo.svg" alt="OmniPrisma" style={{ width: '36px', height: '36px' }} />
-            OmniPrisma
-          </div>
-          <div className="alert">
-            Não foi possível inicializar o cofre: {error}
-          </div>
-        </div>
+  if (needsInit) return (
+    <div className="login-wrap">
+      <div className="card login">
+        <h2>Inicializar Cofre</h2>
+        <p>Parece que o cofre ainda não foi configurado para este usuário.</p>
+        <button className="btn primary full" onClick={initializeVault}>Criar Cofre Agora</button>
       </div>
-    )
-  }
+    </div>
+  )
 
-  if (!api) return <div className="login-wrap" style={{ color: 'var(--text)' }}>Carregando cofre...</div>
+  if (error) return <div className="login-wrap"><div className="card alert">{error} <button onClick={() => setSubmittedPassword('')} className="btn link">Tentar novamente</button></div></div>
+  if (!api) return <div className="login-wrap">Abrindo cofre...</div>
 
   return <VaultContext.Provider value={api}>{children}</VaultContext.Provider>
 }

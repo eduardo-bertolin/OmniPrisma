@@ -209,6 +209,7 @@ function Workspace({ user }) {
 
 export default function App() {
   const [session, setSession] = useState(null)
+  const [vaultPassword, setVaultPassword] = useState(null)
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
@@ -221,9 +222,9 @@ export default function App() {
   }, [])
 
   if (!ready) return null
-  if (!session) return <Login />
+  if (!session) return <Login onLogin={setVaultPassword} />
   return (
-    <VaultProvider user={session.user}>
+    <VaultProvider user={session.user} password={vaultPassword}>
       <Workspace user={session.user} />
     </VaultProvider>
   )
