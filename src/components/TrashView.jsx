@@ -186,12 +186,19 @@ export default function TrashView({ isAdmin, onChanged }) {
                 </div>
               </div>
               <div className="actions">
-                <button className="btn" onClick={() => restoreCompany(company)} disabled={busy}>
-                  Restaurar
+                <button className="btn link" onClick={() => restoreCompany(company)} disabled={busy} title="Restaurar empresa" style={{ padding: '4px' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 4v6a4 4 0 0 1-4 4H5a4 4 0 0 1-4-4V4"></path>
+                    <path d="M1 19a4 4 0 0 0 4 4h16a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v6"></path>
+                    <path d="M12 14l-3-3 3-3"></path>
+                  </svg>
                 </button>
                 {isAdmin && (
-                  <button className="btn danger" onClick={() => purgeCompany(company)} disabled={busy}>
-                    Excluir definitivamente
+                  <button className="btn link danger" onClick={() => purgeCompany(company)} disabled={busy} title="Excluir definitivamente" style={{ padding: '4px' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
                   </button>
                 )}
               </div>
@@ -215,12 +222,19 @@ export default function TrashView({ isAdmin, onChanged }) {
                 </div>
               </div>
               <div className="actions">
-                <button className="btn" onClick={() => restoreContact(contact)} disabled={busy}>
-                  Restaurar
+                <button className="btn link" onClick={() => restoreContact(contact)} disabled={busy} title="Restaurar contato" style={{ padding: '4px' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 4v6a4 4 0 0 1-4 4H5a4 4 0 0 1-4-4V4"></path>
+                    <path d="M1 19a4 4 0 0 0 4 4h16a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v6"></path>
+                    <path d="M12 14l-3-3 3-3"></path>
+                  </svg>
                 </button>
                 {isAdmin && (
-                  <button className="btn danger" onClick={() => purgeContact(contact)} disabled={busy}>
-                    Excluir definitivamente
+                  <button className="btn link danger" onClick={() => purgeContact(contact)} disabled={busy} title="Excluir definitivamente" style={{ padding: '4px' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
                   </button>
                 )}
               </div>
